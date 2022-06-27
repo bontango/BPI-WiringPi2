@@ -33,6 +33,7 @@
 #define PULLOFF         7
 
 #define BPI_MODEL_MIN   21
+#define BPI_MODEL_M2Z   33  //banana PI M2 Zero
 
 // Function prototypes
 //	c++ wrappers thanks to a comment by Nick Lott

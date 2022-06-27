@@ -167,14 +167,16 @@ static int physPinToGpio4M2Z (int physPin)
  *********************************************************************************
  */
 
-static void readallPhys (int physPin)
+static void readallPhys (int physPin, int model)
 {
   int pin ;
 
   if (physPinToGpio (physPin) == -1)
     printf (" |     |    ") ;
-  else
+  else if ( model == BPI_MODEL_M2Z )
     printf (" | %3d | %3d", physPinToGpio4M2Z (physPin), physToWpi [physPin]) ;
+  else
+    printf (" | %3d | %3d", physPinToGpio (physPin), physToWpi [physPin]) ;
 
   printf (" | %s", physNames [physPin]) ;
 
@@ -220,8 +222,10 @@ static void readallPhys (int physPin)
 
   if (physToWpi     [physPin] == -1)
     printf (" |     |    ") ;
-  else
+  else if ( model == BPI_MODEL_M2Z )
     printf (" | %-3d | %-3d", physToWpi [physPin], physPinToGpio4M2Z (physPin)) ;
+  else
+    printf (" | %-3d | %-3d", physToWpi [physPin], physPinToGpio (physPin)) ;
 
   printf (" |\n") ;
 }
@@ -282,13 +286,13 @@ void abReadall (int model, int rev)
   printf (" | BCM | wPi |   Name  | Mode | V | Physical | V | Mode | Name    | wPi | BCM |\n") ;
   printf (" +-----+-----+---------+------+---+----++----+---+------+---------+-----+-----+\n") ;
   for (pin = 1 ; pin <= 26 ; pin += 2)
-    readallPhys (pin) ;
+    readallPhys (pin,model) ;
 
   if (rev == PI_VERSION_2) // B version 2
   {
     printf (" +-----+-----+---------+------+---+----++----+---+------+---------+-----+-----+\n") ;
     for (pin = 51 ; pin <= 54 ; pin += 2)
-      readallPhys (pin) ;
+      readallPhys (pin,model) ;
   }
 
   printf (" +-----+-----+---------+------+---+----++----+---+------+---------+-----+-----+\n") ;
@@ -333,7 +337,7 @@ static void piPlusReadall (int model)
   printf (" | BCM | wPi |   Name  | Mode | V | Physical | V | Mode | Name    | wPi | BCM |\n") ;
   printf (" +-----+-----+---------+------+---+----++----+---+------+---------+-----+-----+\n") ;
   for (pin = 1 ; pin <= 40 ; pin += 2)
-    readallPhys (pin) ;
+    readallPhys (pin,model) ;
   printf (" +-----+-----+---------+------+---+----++----+---+------+---------+-----+-----+\n") ;
   printf (" | BCM | wPi |   Name  | Mode | V | Physical | V | Mode | Name    | wPi | BCM |\n") ;
 
