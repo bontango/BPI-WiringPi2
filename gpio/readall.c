@@ -147,6 +147,18 @@ static char *physNames [64] =
    NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
 } ;
 
+/*
+ * physPinToGpio4M2Z:
+ *      Translate a physical Pin number to native GPIO pin number.
+ *      Banana Pi M2 Zero version, used for visualise in 'gpio readall' only
+ *********************************************************************************
+ */
+extern int physToGpio_BPI_M2Z[64];
+static int physPinToGpio4M2Z (int physPin)
+{
+  return physToGpio_BPI_M2Z [physPin & 63] ;
+}
+
 
 /*
  * readallPhys:
@@ -162,7 +174,7 @@ static void readallPhys (int physPin)
   if (physPinToGpio (physPin) == -1)
     printf (" |     |    ") ;
   else
-    printf (" | %3d | %3d", physPinToGpio (physPin), physToWpi [physPin]) ;
+    printf (" | %3d | %3d", physPinToGpio4M2Z (physPin), physToWpi [physPin]) ;
 
   printf (" | %s", physNames [physPin]) ;
 
@@ -209,7 +221,7 @@ static void readallPhys (int physPin)
   if (physToWpi     [physPin] == -1)
     printf (" |     |    ") ;
   else
-    printf (" | %-3d | %-3d", physToWpi [physPin], physPinToGpio (physPin)) ;
+    printf (" | %-3d | %-3d", physToWpi [physPin], physPinToGpio4M2Z (physPin)) ;
 
   printf (" |\n") ;
 }
@@ -305,10 +317,12 @@ static void plus2header (int model)
     printf (" +-----+-----+---------+------+---+---Pi 2---+---+------+---------+-----+-----+\n") ;
   else if (model == PI_MODEL_3)
     printf (" +-----+-----+---------+------+---+---Pi 3---+---+------+---------+-----+-----+\n") ;
+  else if (model >= BPI_MODEL_MIN) 
+  //printf (" +-----+-----+---------+Banana Pi M2 Zero[H2+/H3]+------+---------+-----+-----+\n") ;
+    printf (" +-----+-----+---------+%-15s+------+---------+-----+-----+\n",piModelNames[model]) ;
   else
     printf (" +-----+-----+---------+------+---+---Pi ?---+---+------+---------+-----+-----+\n") ;
 }
-
 
 static void piPlusReadall (int model)
 {

@@ -741,6 +741,7 @@ const int physToGpio_BP [64] =
 #include "bpi-m1-m1p-r1.h"
 #include "bpi-m2.h"
 #include "bpi-m2p.h"
+#include "bpi-m2z.h" //bontango
 #include "bpi-m2u.h"
 #include "bpi-m2m.h"
 #include "bpi-m3.h"
