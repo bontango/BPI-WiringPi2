@@ -867,6 +867,9 @@ void sunxi_pullUpDnControl (int pin, int pud)
   int sub_index = index - 16*sub;
   uint32_t phyaddr=0;
 
+  if (wiringPiDebug)
+	printf("sunxi_set_pullupdn %d %d\n", pin, pud);
+
   /* for M2 PM and PL */
   if(bank == 11)
     phyaddr = SUNXI_GPIO_LM_BASE + ((bank -11) * 36) + 0x1c + sub*4;

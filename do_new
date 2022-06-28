@@ -1,0 +1,3 @@
+sudo ./build uninstall
+sudo ./build clean
+sudo ./build
