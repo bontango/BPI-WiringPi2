@@ -11,6 +11,16 @@ remaining bugs:
 - wiringPiISR not implemented
 
 installation
-- git clone https://github.com/bontango/BPI-WiringPi2.git
-- cd BPI-WiringPi2
-- ./build
+-create board.sh file
+sudo su
+mkdir -p /var/lib/bananapi
+echo "BOARD=bpi-m2z" > /var/lib/bananapi/board.sh
+echo "BOARD_AUTO=bpi-m2z" >> /var/lib/bananapi/board.sh
+echo "BOARD_OLD=bpi-m64" >> /var/lib/bananapi/board.sh
+
+- clone git repository
+git clone https://github.com/bontango/BPI-WiringPi2.git
+
+- build & install
+cd BPI-WiringPi2
+./build
