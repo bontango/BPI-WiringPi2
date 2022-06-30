@@ -622,6 +622,13 @@ void doEdge (int argc, char *argv [])
   pin  = atoi (argv [2]) ;
   mode = argv [3] ;
 
+  //BPI extension
+  //do we need to translate the pin?
+  if (is_bpi_model)
+	{
+	  pin = bcmTo_BPI_M2Z_bcm[pin];
+	}
+
 // Export the pin and set direction to input
 
   if ((fd = fopen ("/sys/class/gpio/export", "w")) == NULL)
