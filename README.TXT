@@ -2,15 +2,19 @@ WiringPI2
 
 Fork of BPI-SINOVOIP/BPI-WiringPi2:master
 with adapations for Banana PI M2 Zero board
+NOTE: ONLY TESTED WITH M2-ZERO, may NOT WORK with other boards!
 
 Bug fixes:
-'gpio readall' is showing the correct board type and correct numbers for BCM pins.
+- 'gpio readall' is showing the correct board type and correct numbers for BCM pins.
+- setting pull-up/pull-down on ports is working ( gpio & library call)
+
+Add on:
+- new command 'gpio readallbpi' gives BCM port numbers internally used by M2-ZERO (for information only)
 
 remaining bugs:
-- setting pull-up on ports is not working
 - wiringPiISR not implemented
 
-installation
+INSTALLATION
 -create board.sh file
 sudo su
 mkdir -p /var/lib/bananapi
