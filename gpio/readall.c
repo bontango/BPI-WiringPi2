@@ -167,13 +167,13 @@ static int physPinToGpio4M2Z (int physPin)
  *********************************************************************************
  */
 
-static void readallPhys (int physPin, int model)
+static void readallPhys (int physPin, int model, int bpi)
 {
   int pin ;
 
   if (physPinToGpio (physPin) == -1)
     printf (" |     |    ") ;
-  else if ( model == BPI_MODEL_M2Z )
+  else if ( ( model == BPI_MODEL_M2Z ) & ( bpi == 0))
     printf (" | %3d | %3d", physPinToGpio4M2Z (physPin), physToWpi [physPin]) ;
   else
     printf (" | %3d | %3d", physPinToGpio (physPin), physToWpi [physPin]) ;
@@ -222,7 +222,7 @@ static void readallPhys (int physPin, int model)
 
   if (physToWpi     [physPin] == -1)
     printf (" |     |    ") ;
-  else if ( model == BPI_MODEL_M2Z )
+  else if ( ( model == BPI_MODEL_M2Z ) & ( bpi == 0))
     printf (" | %-3d | %-3d", physToWpi [physPin], physPinToGpio4M2Z (physPin)) ;
   else
     printf (" | %-3d | %-3d", physToWpi [physPin], physPinToGpio (physPin)) ;
@@ -286,13 +286,13 @@ void abReadall (int model, int rev)
   printf (" | BCM | wPi |   Name  | Mode | V | Physical | V | Mode | Name    | wPi | BCM |\n") ;
   printf (" +-----+-----+---------+------+---+----++----+---+------+---------+-----+-----+\n") ;
   for (pin = 1 ; pin <= 26 ; pin += 2)
-    readallPhys (pin,model) ;
+    readallPhys (pin,model,0) ;
 
   if (rev == PI_VERSION_2) // B version 2
   {
     printf (" +-----+-----+---------+------+---+----++----+---+------+---------+-----+-----+\n") ;
     for (pin = 51 ; pin <= 54 ; pin += 2)
-      readallPhys (pin,model) ;
+      readallPhys (pin,model,0) ;
   }
 
   printf (" +-----+-----+---------+------+---+----++----+---+------+---------+-----+-----+\n") ;
@@ -328,7 +328,7 @@ static void plus2header (int model)
     printf (" +-----+-----+---------+------+---+---Pi ?---+---+------+---------+-----+-----+\n") ;
 }
 
-static void piPlusReadall (int model)
+static void piPlusReadall (int model, int bpi)
 {
   int pin ;
 
@@ -337,7 +337,7 @@ static void piPlusReadall (int model)
   printf (" | BCM | wPi |   Name  | Mode | V | Physical | V | Mode | Name    | wPi | BCM |\n") ;
   printf (" +-----+-----+---------+------+---+----++----+---+------+---------+-----+-----+\n") ;
   for (pin = 1 ; pin <= 40 ; pin += 2)
-    readallPhys (pin,model) ;
+    readallPhys (pin,model,bpi) ;
   printf (" +-----+-----+---------+------+---+----++----+---+------+---------+-----+-----+\n") ;
   printf (" | BCM | wPi |   Name  | Mode | V | Physical | V | Mode | Name    | wPi | BCM |\n") ;
 
@@ -352,7 +352,7 @@ static void piPlusReadall (int model)
  *********************************************************************************
  */
 
-void doReadall (void)
+void doReadall (int bpi)
 {
   int model, rev, mem, maker, overVolted ;
 
@@ -367,7 +367,7 @@ void doReadall (void)
   /**/ if ((model == PI_MODEL_A) || (model == PI_MODEL_B))
     abReadall (model, rev) ;
   else if ((model >= BPI_MODEL_MIN) || (model == PI_MODEL_BP) || (model == PI_MODEL_AP) || (model == PI_MODEL_2) || (model == PI_MODEL_3) || (model == PI_MODEL_ZERO) || (model == PI_MODEL_ZERO_W))
-    piPlusReadall (model) ;
+    piPlusReadall (model,bpi) ;
   else if ((model == PI_MODEL_CM) || (model == PI_MODEL_CM3))
     allReadall () ;
   else

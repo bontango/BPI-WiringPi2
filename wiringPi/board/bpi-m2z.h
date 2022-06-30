@@ -45,6 +45,7 @@
 #define BPI_M2Z_40      GPIO_PA21
 
 //map phys_num(index) to bp gpio_num(element)
+//physical to (virtual)BCM in gpio readall
 int physToGpio_BPI_M2Z [64] =
 {
           -1,                //0
@@ -70,5 +71,43 @@ int physToGpio_BPI_M2Z [64] =
           -1, BPI_M2Z_40,     //39, 40
    -1,   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, //41-> 55
    -1,   -1, -1, -1, -1, -1, -1, -1 // 56-> 63
+} ;
+ //map (virtual)BCM from Pi to physical BCM for banana 2M zero
+//these numbers can be found in sysfs access via /sys/class/gpio
+int bcmTo_BPI_M2Z_bcm [64] =
+{
+        GPIO_PA19,  //0
+        GPIO_PA18,  //1
+        GPIO_PA12,  //2
+        GPIO_PA11,  //3
+        GPIO_PA06,  //4
+        GPIO_PA07,  //5
+        GPIO_PA08,  //6
+        GPIO_PC07,  //7
+        GPIO_PC03,  //8
+        GPIO_PC01,  //9
+        GPIO_PC00,  //10
+        GPIO_PC02,  //11
+        GPIO_PL02,  //12
+        GPIO_PA09,  //13
+        GPIO_PA13,  //14
+        GPIO_PA14,  //15
+        GPIO_PL04,  //16
+        GPIO_PA01,  //17
+        GPIO_PA16,  //18
+        GPIO_PA10,  //19
+        GPIO_PA21,  //20
+        GPIO_PA20,  //21
+        GPIO_PA03,  //22
+        GPIO_PA15,  //23
+        GPIO_PC04,  //24
+        GPIO_PA02,  //25
+        GPIO_PA17,  //26
+        GPIO_PA00  //27
+        -1, -1, -1,  //28-> 30
+        -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  //31-> 40
+        -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  //41-> 50
+        -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  //51-> 60
+        -1, -1, -1,  //61->63 
 } ;
 

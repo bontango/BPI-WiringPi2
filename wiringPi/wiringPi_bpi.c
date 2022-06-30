@@ -162,6 +162,7 @@ static int syspin [64] =
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 } ;
 
+/* not used for now
 static int edge [64] =
 {
   -1, -1, -1, -1, 4, -1, -1, 7, 
@@ -171,7 +172,7 @@ static int edge [64] =
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 } ;
-
+*/
 
 
 static int BP_PIN_MASK[14][32] =  //[BANK]  [INDEX]
@@ -860,6 +861,12 @@ int sunxi_digitalRead(int pin)
 
 void sunxi_pullUpDnControl (int pin, int pud)
 {
+
+  //fix jump to new routine, works wit m2-Zero
+  //need to be tested for other boards!
+  sunxi_set_pullupdn( pin, pud);  
+  return;
+
   uint32_t regval = 0;
   int bank = pin >> 5;
   int index = pin - (bank << 5);
@@ -1481,6 +1488,10 @@ int bpi_wiringPiSetup (void)
   if (wiringPiDebug)
     printf ("wiringPi: wiringPiSetup called\n") ;
 
+  //RTH extensions
+  if (sunxi_setup() != 0)
+    (void)wiringPiFailure (WPI_FATAL, "sunxi_setup failed\n") ;
+
   piBoardId (&model, &rev, &mem, &maker, &overVolted) ;
 
   // Open the master /dev/memory device
@@ -1575,4 +1586,146 @@ static int bpi_wiringPiSetupRegOffset(int mode)
 
   return -1;
 }
+
+//from RPI.GPIO
+
+typedef struct sunxi_gpio {
+    unsigned int CFG[4];
+    unsigned int DAT;
+    unsigned int DRV[2];
+    unsigned int PULL[2];
+} sunxi_gpio_t;
+
+/* gpio interrupt control */
+typedef struct sunxi_gpio_int {
+    unsigned int CFG[3];
+    unsigned int CTL;
+    unsigned int STA;
+    unsigned int DEB;
+} sunxi_gpio_int_t;
+
+typedef struct sunxi_gpio_reg {
+    struct sunxi_gpio gpio_bank[9];
+    unsigned char res[0xbc];
+    struct sunxi_gpio_int gpio_int;
+} sunxi_gpio_reg_t;
+
+
+#define GPIO_BANK(pin)  ((pin) >> 5)
+#define GPIO_NUM(pin)   ((pin) & 0x1F)
+
+#define GPIO_CFG_INDEX(pin)     (((pin) & 0x1F) >> 3)
+#define GPIO_CFG_OFFSET(pin)    ((((pin) & 0x1F) & 0x7) << 2)
+
+#define GPIO_PUL_INDEX(pin)     (((pin) & 0x1F )>> 4)
+#define GPIO_PUL_OFFSET(pin)    (((pin) & 0x0F) << 1)
+
+static volatile uint32_t *pio_map;
+static volatile uint32_t *r_pio_map;
+
+void sunxi_set_pullupdn(int gpio, int pud)
+{
+    uint32_t regval = 0;
+    int bank = GPIO_BANK(gpio); //gpio >> 5
+    int index = GPIO_PUL_INDEX(gpio); // (gpio & 0x1f) >> 4
+    int offset = GPIO_PUL_OFFSET(gpio); // (gpio) & 0x0F) << 1
+    if (wiringPiDebug) printf("sunxi_set_pullupdn %d %d\n", gpio, pud);
+    if (wiringPiDebug) printf("gpio(%d) bank(%d) index(%d) offset(%d)\n", gpio, bank, index, offset);
+
+    sunxi_gpio_t *pio = &((sunxi_gpio_reg_t *) pio_map)->gpio_bank[bank];
+/* DK, for PL and PM */
+    if(bank >= 11) {
+      bank -= 11;
+      pio = &((sunxi_gpio_reg_t *) r_pio_map)->gpio_bank[bank];
+    }
+
+    switch(pud) {
+      case PUD_DOWN:
+        pud=0x2;
+        if (wiringPiDebug) printf("pulldown\n");
+        break;
+      case PUD_UP:
+        pud=0x1;
+        if (wiringPiDebug) printf("pullup\n");
+        break;
+      default:
+        if (wiringPiDebug) printf("off\n");
+        pud=0x0;
+        break;
+    }
+
+
+  if (wiringPiDebug)
+	printf(" phyaddr:0x%x\n",*(&pio->PULL[0] + index)); 
+
+
+    regval = *(&pio->PULL[0] + index);
+    regval &= ~(3 << offset);
+    regval |= pud << offset;
+    *(&pio->PULL[0] + index) = regval;
+    regval = *(&pio->PULL[0] + index);
+}
+
+
+#define SETUP_OK           0
+#define SETUP_DEVMEM_FAIL  1
+#define SETUP_MALLOC_FAIL  2
+#define SETUP_MMAP_FAIL    3
+#define SETUP_CPUINFO_FAIL 4
+#define SETUP_NOT_RPI_FAIL 5
+
+#define PAGE_SIZE  (4*1024)
+
+static volatile uint32_t *gpio_map;
+
+#define SUNXI_GPIO_REG_OFFSET   0x800
+
+static volatile uint32_t *r_gpio_map;
+#define SUNXI_R_GPIO_BASE       0x01F02000
+#define SUNXI_R_GPIO_REG_OFFSET   0xC00
+
+#define MY_SUNXI_GPIO_BASE            0x01C20000
+
+//called from bpi_wiringPiSetup
+int sunxi_setup(void)
+{
+    int mem_fd;
+    uint8_t *gpio_mem;
+
+//we use wiringPiDebug here
+/*
+    char* szDebug = getenv(ENV_DEBUG);
+    if (szDebug) {
+      bpi_debug = atoi(szDebug);
+    } else {
+      bpi_debug = 0;
+    }
+*/
+    if (wiringPiDebug) printf("sunxi_setup\n");
+
+    // mmap the GPIO memory registers
+    if ((mem_fd = open("/dev/mem", O_RDWR|O_SYNC) ) < 0)
+        return SETUP_DEVMEM_FAIL;
+
+    if ((gpio_mem = malloc(BLOCK_SIZE + (PAGE_SIZE-1))) == NULL)
+        return SETUP_MALLOC_FAIL;
+
+    if ((uint32_t)gpio_mem % PAGE_SIZE)
+        gpio_mem += PAGE_SIZE - ((uint32_t)gpio_mem % PAGE_SIZE);
+
+    gpio_map = (uint32_t *)mmap( (caddr_t)gpio_mem, BLOCK_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_FIXED, mem_fd, MY_SUNXI_GPIO_BASE);
+    pio_map = gpio_map + (SUNXI_GPIO_REG_OFFSET>>2);
+//printf("gpio_mem[%x] gpio_map[%x] pio_map[%x]\n", gpio_mem, gpio_map, pio_map);
+//R_PIO GPIO LMN
+    r_gpio_map = (uint32_t *)mmap( (caddr_t)0, BLOCK_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, mem_fd, SUNXI_R_GPIO_BASE);
+    r_pio_map = r_gpio_map + (SUNXI_R_GPIO_REG_OFFSET>>2);
+//printf("r_gpio_map[%x] r_pio_map[%x]\n", r_gpio_map, r_pio_map);
+
+    //if ((uint32_t)gpio_map < 0)
+    if ((uint32_t *)gpio_map == MAP_FAILED)
+        return SETUP_MMAP_FAIL;
+
+    return SETUP_OK;
+}
+
 #endif /* BPI */

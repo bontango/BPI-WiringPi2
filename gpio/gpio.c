@@ -42,11 +42,13 @@
 
 #include "../version.h"
 
+#include "../wiringPi/board/bpi-gpio.h" 
+
 extern int wiringPiDebug ;
 
 // External functions I can't be bothered creating a separate .h file for:
 
-extern void doReadall    (void) ;
+extern void doReadall    (int bpi) ;
 extern void doAllReadall (void) ;
 extern void doPins       (void) ;
 
@@ -70,7 +72,7 @@ char *usage = "Usage: gpio -v\n"
               "       gpio [-p] <read/write/wb> ...\n"
               "       gpio <read/write/aread/awritewb/pwm/clock/mode> ...\n"
               "       gpio <toggle/blink> <pin>\n"
-	      "       gpio readall/reset\n"
+	      "       gpio readall/readallbpi\n"
 	      "       gpio unexportall/exports\n"
 	      "       gpio export/edge/unexport ...\n"
 	      "       gpio wfi <pin> <mode>\n"
@@ -87,6 +89,8 @@ char *usage = "Usage: gpio -v\n"
 	      "       gpio gbr <channel>\n"
 	      "       gpio gbw <channel> <value>" ;	// No trailing newline needed here.
 
+//BPI extensions
+static int is_bpi_model = 0;
 
 #ifdef	NOT_FOR_NOW
 /*
@@ -487,6 +491,13 @@ void doExport (int argc, char *argv [])
   }
 
   pin = atoi (argv [2]) ;
+
+  //BPI extension
+  //do we need to translate the pin?
+  if (is_bpi_model)
+	{
+	  pin = bcmTo_BPI_M2Z_bcm[pin];
+	}
 
   mode = argv [3] ;
 
@@ -1312,12 +1323,17 @@ static void doVersion (char *argv [])
 int main (int argc, char *argv [])
 {
   int i ;
+  int model, rev, mem, maker, overVolted ;
 
   if (getenv ("WIRINGPI_DEBUG") != NULL)
   {
     printf ("gpio: wiringPi debug mode enabled\n") ;
     wiringPiDebug = TRUE ;
   }
+
+  //BPI extension, determin if we are running on BPI model
+  piBoardId (&model, &rev, &mem, &maker, &overVolted) ;
+  if (model >= BPI_MODEL_MIN) is_bpi_model =1;
 
   if (argc == 1)
   {
@@ -1516,8 +1532,9 @@ int main (int argc, char *argv [])
   else if (strcasecmp (argv [1], "pwmc"     ) == 0) doPwmClock   (argc, argv) ;
   else if (strcasecmp (argv [1], "pwmTone"  ) == 0) doPwmTone    (argc, argv) ;
   else if (strcasecmp (argv [1], "drive"    ) == 0) doPadDrive   (argc, argv) ;
-  else if (strcasecmp (argv [1], "readall"  ) == 0) doReadall    () ;
-  else if (strcasecmp (argv [1], "nreadall" ) == 0) doReadall    () ;
+  else if (strcasecmp (argv [1], "readall"  ) == 0) doReadall    (0) ;
+  else if (strcasecmp (argv [1], "readallbpi"  ) == 0) doReadall    (1) ;
+  else if (strcasecmp (argv [1], "nreadall" ) == 0) doReadall    (0) ;
   else if (strcasecmp (argv [1], "pins"     ) == 0) doPins       () ;
   else if (strcasecmp (argv [1], "i2cdetect") == 0) doI2Cdetect  (argc, argv) ;
   else if (strcasecmp (argv [1], "i2cd"     ) == 0) doI2Cdetect  (argc, argv) ;
