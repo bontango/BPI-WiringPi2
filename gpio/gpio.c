@@ -410,7 +410,9 @@ static void doExports (UNU int argc, UNU char *argv [])
   if (is_bpi_model)
 	{
 	  pin = bcmTo_BPI_M2Z_bcm[i];
+  	  if ( pin == -1) continue;
 	}
+  else pin = i;
 
 // Try to read the direction
 
@@ -729,15 +731,24 @@ void doUnexportall (char *progName)
 {
   FILE *fd ;
   int pin ;
+  int bpi_pin = -1 ;
 
   for (pin = 0 ; pin < 63 ; ++pin)
   {
+    //BPI extension
+    //do we need to translate the pin?
+    if (is_bpi_model)
+	{
+	  bpi_pin = bcmTo_BPI_M2Z_bcm[pin];
+    	  if ( bpi_pin == -1) continue;
+	}
+
     if ((fd = fopen ("/sys/class/gpio/unexport", "w")) == NULL)
     {
       fprintf (stderr, "%s: Unable to open GPIO export interface\n", progName) ;
       exit (1) ;
     }
-    fprintf (fd, "%d\n", pin) ;
+    fprintf (fd, "%d\n", bpi_pin) ;
     fclose (fd) ;
   }
 }
