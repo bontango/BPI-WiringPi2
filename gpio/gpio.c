@@ -400,13 +400,21 @@ static void doExports (UNU int argc, UNU char *argv [])
   int i, l, first ;
   char fName [128] ;
   char buf [16] ;
+  int pin;
 
   for (first = 0, i = 0 ; i < 64 ; ++i)	// Crude, but effective
   {
 
+  //BPI extension
+  //do we need to translate the pin?
+  if (is_bpi_model)
+	{
+	  pin = bcmTo_BPI_M2Z_bcm[i];
+	}
+
 // Try to read the direction
 
-    sprintf (fName, "/sys/class/gpio/gpio%d/direction", i) ;
+    sprintf (fName, "/sys/class/gpio/gpio%d/direction", pin) ;
     if ((fd = open (fName, O_RDONLY)) == -1)
       continue ;
 
@@ -431,7 +439,7 @@ static void doExports (UNU int argc, UNU char *argv [])
 
 // Try to Read the value
 
-    sprintf (fName, "/sys/class/gpio/gpio%d/value", i) ;
+    sprintf (fName, "/sys/class/gpio/gpio%d/value", pin) ;
     if ((fd = open (fName, O_RDONLY)) == -1)
     {
       printf ("No Value file (huh?)\n") ;
@@ -449,7 +457,7 @@ static void doExports (UNU int argc, UNU char *argv [])
 
 // Read any edge trigger file
 
-    sprintf (fName, "/sys/class/gpio/gpio%d/edge", i) ;
+    sprintf (fName, "/sys/class/gpio/gpio%d/edge", pin) ;
     if ((fd = open (fName, O_RDONLY)) == -1)
     {
       printf ("\n") ;
