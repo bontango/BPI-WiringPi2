@@ -1,4 +1,4 @@
 #define VERSION "2.44"
-#define BPI_VERSION "0.04"
+#define BPI_VERSION "0.05"
 #define VERSION_MAJOR 2
 #define VERSION_MINOR 44

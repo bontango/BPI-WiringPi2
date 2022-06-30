@@ -684,6 +684,13 @@ void doUnexport (int argc, char *argv [])
 
   pin = atoi (argv [2]) ;
 
+  //BPI extension
+  //do we need to translate the pin?
+  if (is_bpi_model)
+	{
+	  pin = bcmTo_BPI_M2Z_bcm[pin];
+	}
+
   if ((fd = fopen ("/sys/class/gpio/unexport", "w")) == NULL)
   {
     fprintf (stderr, "%s: Unable to open GPIO export interface\n", argv [0]) ;
