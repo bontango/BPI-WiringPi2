@@ -334,12 +334,19 @@ static void piPlusReadall (int model, int bpi)
 
   plus2header (model) ;
 
-  printf (" | BCM | wPi |   Name  | Mode | V | Physical | V | Mode | Name    | wPi | BCM |\n") ;
+ if (bpi) {
+  printf (" | BPI | wPi |   Name  | Mode | V | Physical | V | Mode | Name    | wPi | BPI |\n") ; }
+ else {
+  printf (" | BCM | wPi |   Name  | Mode | V | Physical | V | Mode | Name    | wPi | BCM |\n") ; }
+
   printf (" +-----+-----+---------+------+---+----++----+---+------+---------+-----+-----+\n") ;
   for (pin = 1 ; pin <= 40 ; pin += 2)
     readallPhys (pin,model,bpi) ;
   printf (" +-----+-----+---------+------+---+----++----+---+------+---------+-----+-----+\n") ;
-  printf (" | BCM | wPi |   Name  | Mode | V | Physical | V | Mode | Name    | wPi | BCM |\n") ;
+ if (bpi) {
+  printf (" | BPI | wPi |   Name  | Mode | V | Physical | V | Mode | Name    | wPi | BPI |\n") ; }
+ else {
+  printf (" | BCM | wPi |   Name  | Mode | V | Physical | V | Mode | Name    | wPi | BCM |\n") ; }
 
   plus2header (model) ;
 }

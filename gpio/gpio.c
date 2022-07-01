@@ -1324,7 +1324,7 @@ static void doVersion (char *argv [])
   wiringPiVersion (&vMaj, &vMin) ;
   printf ("gpio version: %d.%d\n", vMaj, vMin) ;
   printf ("Copyright (c) 2012-2017 Gordon Henderson\n") ;
-  printf ("BPI extensions version: %s\n", BPI_VERSION) ;
+  printf ("BPI extensions by bontango; version: %s\n", BPI_VERSION) ;
   printf ("This is free software with ABSOLUTELY NO WARRANTY.\n") ;
   printf ("For details type: %s -warranty\n", argv [0]) ;
   printf ("\n") ;

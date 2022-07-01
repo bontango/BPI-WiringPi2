@@ -7,12 +7,18 @@ NOTE: ONLY TESTED WITH M2-ZERO, may NOT WORK with other boards!
 Bug fixes:
 - 'gpio readall' is showing the correct board type and correct numbers for BCM pins.
 - setting pull-up/pull-down on ports is working ( gpio & library call)
+- wiringPiISR (partly) implemented, see limitations below
 
 Add on:
-- new command 'gpio readallbpi' gives BCM port numbers internally used by M2-ZERO (for information only)
+- new command 'gpio readallbpi' gives BPI port numbers internally used by M2-ZERO (for information only)
+
+Limitations:
+The 'wiringPiISR' library call ( and 'gpio wfi ...') DO NOT WORK with the wPi ports: 5,10,11,12,13,14,26,27
+These are the BPI port 64 and above, which you can identify by issuing 'gpio readallbpi'
 
 remaining bugs:
-- wiringPiISR not implemented
+There are for sure still bugs, I did not test all wiringPI features!
+Please let me know in case you find another bug ...
 
 INSTALLATION
 -create board.sh file
