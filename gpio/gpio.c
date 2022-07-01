@@ -490,7 +490,7 @@ static void doExports (UNU int argc, UNU char *argv [])
 void doExport (int argc, char *argv [])
 {
   FILE *fd ;
-  int pin ;
+  int pin,org_pin ;
   char *mode ;
   char fName [128] ;
 
@@ -500,7 +500,7 @@ void doExport (int argc, char *argv [])
     exit (1) ;
   }
 
-  pin = atoi (argv [2]) ;
+  org_pin = pin = atoi (argv [2]) ;
 
   //BPI extension
   //do we need to translate the pin?
@@ -523,7 +523,7 @@ void doExport (int argc, char *argv [])
   sprintf (fName, "/sys/class/gpio/gpio%d/direction", pin) ;
   if ((fd = fopen (fName, "w")) == NULL)
   {
-    fprintf (stderr, "%s: Unable to open GPIO direction interface for pin %d: %s\n", argv [0], pin, strerror (errno)) ;
+    fprintf (stderr, "%s: Unable to open GPIO direction interface for pin %d(%d): %s\n", argv [0], pin, org_pin, strerror (errno)) ;
     exit (1) ;
   }
 
@@ -611,7 +611,7 @@ void doWfi (int argc, char *argv [])
 void doEdge (int argc, char *argv [])
 {
   FILE *fd ;
-  int pin ;
+  int pin,org_pin ;
   char *mode ;
   char fName [128] ;
 
@@ -621,7 +621,7 @@ void doEdge (int argc, char *argv [])
     exit (1) ;
   }
 
-  pin  = atoi (argv [2]) ;
+  org_pin = pin  = atoi (argv [2]) ;
   mode = argv [3] ;
 
   //BPI extension
@@ -645,7 +645,7 @@ void doEdge (int argc, char *argv [])
   sprintf (fName, "/sys/class/gpio/gpio%d/direction", pin) ;
   if ((fd = fopen (fName, "w")) == NULL)
   {
-    fprintf (stderr, "%s: Unable to open GPIO direction interface for pin %d: %s\n", argv [0], pin, strerror (errno)) ;
+    fprintf (stderr, "%s: Unable to open GPIO direction interface for pin %d(%d): %s\n", argv [0], pin, org_pin, strerror (errno)) ;
     exit (1) ;
   }
 

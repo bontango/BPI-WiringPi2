@@ -1124,6 +1124,7 @@ void bpi_pinMode (int pin, int mode)
 void bpi_pullUpDnControl (int pin, int pud)
 {
   struct wiringPiNodeStruct *node = wiringPiNodes ;
+
   if ((pin & PI_GPIO_MASK) == 0)		// On-Board Pin
   {
     /**/ if (wiringPiMode == WPI_MODE_PINS)
@@ -1726,6 +1727,46 @@ int sunxi_setup(void)
         return SETUP_MMAP_FAIL;
 
     return SETUP_OK;
+}
+
+//translate from physical BPI pin to (virtual) bcm pin
+int bpi_translate_pin (int pin)
+{
+	int tr_pin;
+
+	switch (pin)
+	{
+	case GPIO_PA19:  tr_pin=0; break;
+        case GPIO_PA18:  tr_pin=1; break;
+        case GPIO_PA12:  tr_pin=2; break;
+        case GPIO_PA11:  tr_pin=3; break;
+        case GPIO_PA06:  tr_pin=4; break;
+        case GPIO_PA07:  tr_pin=5; break;
+        case GPIO_PA08:  tr_pin=6; break;
+        case GPIO_PC07:  tr_pin=7; break;
+        case GPIO_PC03:  tr_pin=8; break;
+        case GPIO_PC01:  tr_pin=9; break;
+        case GPIO_PC00:  tr_pin=10; break;
+        case GPIO_PC02:  tr_pin=11; break;
+        case GPIO_PL02:  tr_pin=12; break;
+        case GPIO_PA09:  tr_pin=13; break;
+        case GPIO_PA13:  tr_pin=14; break;
+        case GPIO_PA14:  tr_pin=15; break;
+        case GPIO_PL04:  tr_pin=16; break;
+        case GPIO_PA01:  tr_pin=17; break;
+        case GPIO_PA16:  tr_pin=18; break;
+        case GPIO_PA10:  tr_pin=19; break;
+        case GPIO_PA21:  tr_pin=20; break;
+        case GPIO_PA20:  tr_pin=21; break;
+        case GPIO_PA03:  tr_pin=22; break;
+        case GPIO_PA15:  tr_pin=23; break;
+        case GPIO_PC04:  tr_pin=24; break;
+        case GPIO_PA02:  tr_pin=25; break;
+        case GPIO_PA17:  tr_pin=26; break;
+        case GPIO_PA00:  tr_pin=27; break;
+	default: tr_pin = -1; break;
+	}
+  return tr_pin;
 }
 
 #endif /* BPI */

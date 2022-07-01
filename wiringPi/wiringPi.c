@@ -77,6 +77,12 @@
 #include "wiringPi.h"
 #include "../version.h"
 
+#ifdef BPI
+//map (virtual)BCM from Pi to physical BCM for banana 2M zero
+//these numbers can be found in sysfs access via /sys/class/gpio
+extern int bcmTo_BPI_M2Z_bcm [64];
+#endif
+
 // Environment Variables
 
 #define	ENV_DEBUG	"WIRINGPI_DEBUG"
@@ -2025,13 +2031,8 @@ int wiringPiISR (int pin, int mode, void (*function)(void))
   pid_t pid ;
   int   count, i ;
   char  c ;
-  int   bcmGpioPin ;
+  int   bcmGpioPin, bpiGpioPin ;
 
-#ifdef BPI
-  if(bpi_found == 1) {
-    return wiringPiFailure (WPI_FATAL, "wiringPiISR: wait for support (%d)\n", pin) ;
-  }
-#endif
   if ((pin < 0) || (pin > 63))
     return wiringPiFailure (WPI_FATAL, "wiringPiISR: pin must be 0-63 (%d)\n", pin) ;
 
@@ -2044,6 +2045,7 @@ int wiringPiISR (int pin, int mode, void (*function)(void))
   else
     bcmGpioPin = pin ;
 
+//return;
 // Now export the pin and set the right edge
 //	We're going to use the gpio program to do this, so it assumes
 //	a full installation of wiringPi. It's a bit 'clunky', but it
@@ -2059,6 +2061,11 @@ int wiringPiISR (int pin, int mode, void (*function)(void))
     else
       modeS = "both" ;
 
+#ifdef BPI
+  if(bpi_found == 1) 
+    sprintf (pinS, "%d", bpi_translate_pin(bcmGpioPin)) ;
+  else
+#endif
     sprintf (pinS, "%d", bcmGpioPin) ;
 
     if ((pid = fork ()) < 0)	// Fail
@@ -2089,6 +2096,7 @@ int wiringPiISR (int pin, int mode, void (*function)(void))
   if (sysFds [bcmGpioPin] == -1)
   {
     sprintf (fName, "/sys/class/gpio/gpio%d/value", bcmGpioPin) ;
+
     if ((sysFds [bcmGpioPin] = open (fName, O_RDWR)) < 0)
       return wiringPiFailure (WPI_FATAL, "wiringPiISR: unable to open %s: %s\n", fName, strerror (errno)) ;
   }

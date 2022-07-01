@@ -87,6 +87,8 @@ extern int  bpi_wiringPiISR         (int pin, int mode, void (*function)(void)) 
 //from RPI.GPIO
 int sunxi_setup(void);
 void sunxi_set_pullupdn(int gpio, int pud);
+//extensions
+int bpi_translate_pin (int pin);
 
 
 #endif
