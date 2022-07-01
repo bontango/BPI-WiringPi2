@@ -642,6 +642,14 @@ void doEdge (int argc, char *argv [])
   fprintf (fd, "%d\n", pin) ;
   fclose (fd) ;
 
+  //set direction with pinMode for banana PI
+  if (is_bpi_model)
+  {
+	pinMode(bpi_translate_towPi(pin), INPUT);
+  }
+  else
+  {
+
   sprintf (fName, "/sys/class/gpio/gpio%d/direction", pin) ;
   if ((fd = fopen (fName, "w")) == NULL)
   {
@@ -651,6 +659,7 @@ void doEdge (int argc, char *argv [])
 
   fprintf (fd, "in\n") ;
   fclose (fd) ;
+  }//not banana Pi
 
   sprintf (fName, "/sys/class/gpio/gpio%d/edge", pin) ;
   if ((fd = fopen (fName, "w")) == NULL)

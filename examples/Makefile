@@ -41,7 +41,7 @@ LDLIBS    = -lwiringPi -lwiringPiDev -lpthread -lm -lcrypt -lrt
 SRC	=	blink.c blink8.c blink12.c					\
 		blink12drcs.c							\
 		pwm.c								\
-		speed.c wfi.c isr.c isr-osc.c					\
+		speed.c wfi.c isr.c isr-osc.c isr2.c				\
 		lcd.c lcd-adafruit.c clock.c					\
 		nes.c								\
 		softPwm.c softTone.c 						\

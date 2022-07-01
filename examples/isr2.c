@@ -36,6 +36,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <wiringPi.h>
+#include <unistd.h>
 
 
 // globalCounter:
@@ -54,11 +55,12 @@ void myInterrupt0 (void) { ++globalCounter [0] ; }
 void myInterrupt1 (void) { ++globalCounter [1] ; }
 void myInterrupt2 (void) { ++globalCounter [2] ; }
 void myInterrupt3 (void) { ++globalCounter [3] ; }
+/*
 void myInterrupt4 (void) { ++globalCounter [4] ; }
 void myInterrupt5 (void) { ++globalCounter [5] ; }
 void myInterrupt6 (void) { ++globalCounter [6] ; }
 void myInterrupt7 (void) { ++globalCounter [7] ; }
-
+*/
 
 /*
  *********************************************************************************
@@ -75,16 +77,18 @@ int main (void)
     globalCounter [pin] = myCounter [pin] = 0 ;
 
   wiringPiSetup () ;
-
-  wiringPiISR (0, INT_EDGE_FALLING, &myInterrupt0) ;
-  wiringPiISR (1, INT_EDGE_FALLING, &myInterrupt1) ;
-  wiringPiISR (2, INT_EDGE_FALLING, &myInterrupt2) ;
-  wiringPiISR (3, INT_EDGE_FALLING, &myInterrupt3) ;
-  wiringPiISR (4, INT_EDGE_FALLING, &myInterrupt4) ;
-  wiringPiISR (5, INT_EDGE_FALLING, &myInterrupt5) ;
-  wiringPiISR (6, INT_EDGE_FALLING, &myInterrupt6) ;
-  wiringPiISR (7, INT_EDGE_FALLING, &myInterrupt7) ;
-
+/*
+  pinMode ( 22, INPUT);
+  pinMode ( 23, INPUT);
+  pinMode ( 21, INPUT);
+ */ 
+  pullUpDnControl (21, PUD_UP);
+  pullUpDnControl (22, PUD_UP);
+  pullUpDnControl (23, PUD_UP);
+  
+  wiringPiISR (21, INT_EDGE_FALLING, &myInterrupt3) ;
+  wiringPiISR (22, INT_EDGE_FALLING, &myInterrupt1) ;
+  wiringPiISR (23, INT_EDGE_FALLING, &myInterrupt2) ;
   for (;;)
   {
     gotOne = 0 ;
@@ -105,7 +109,5 @@ int main (void)
 	break ;
     }
   }
-
   return 0 ;
 }
-

@@ -89,6 +89,6 @@ int sunxi_setup(void);
 void sunxi_set_pullupdn(int gpio, int pud);
 //extensions
 int bpi_translate_pin (int pin);
-
+int bpi_translate_towPi (int pin);
 
 #endif
