@@ -25,7 +25,7 @@
 
 #DEBUG	= -g -O0
 DEBUG	= -O3
-CC	= gcc
+CC	?= gcc
 INCLUDE	= -I/usr/local/include
 INCLUDE	+= -I/usr/include
 CFLAGS	= $(DEBUG) -Wall $(INCLUDE) -Winline -pipe

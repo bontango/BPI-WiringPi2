@@ -19,6 +19,8 @@
  *    along with wiringPi.  If not, see <http://www.gnu.org/licenses/>.
  ***********************************************************************
  */
+#pragma once
+
 
 #define	DEFAULT_SERVER_PORT	6124
 
@@ -35,7 +37,7 @@
 #define	DRCN_ANALOG_READ	9
 
 
-struct drcNetComStruct
+typedef struct drcNetComStruct
 {
   uint32_t pin ;
   uint32_t cmd ;
